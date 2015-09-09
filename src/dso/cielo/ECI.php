@@ -57,12 +57,12 @@ final class ECI {
      * @throws  UnexpectedValueException Se o ECI não for conhecido
      */
     public static function value( $indicator , $flag ) {
-        if ( $flag == CreditCard::VISA || 
-             $flag == CreditCard::MASTER_CARD || 
-             $flag == CreditCard::AMERICAN_EXPRESS || 
-             $flag == CreditCard::DINERS_CLUB
-             $flag == CreditCard::DISCOVER || 
-             $flag == CreditCard::JCB
+        if ( $flag == CreditCard::VISA ||
+             $flag == CreditCard::MASTER_CARD ||
+             $flag == CreditCard::AMERICAN_EXPRESS ||
+             $flag == CreditCard::DINERS_CLUB ||
+             $flag == CreditCard::DISCOVER ||
+             $flag == CreditCard::JCB ||
              $flag == CreditCard::AURA) {
             switch ( $indicator ) {
                 case ECI::AUTHENTICATED :
