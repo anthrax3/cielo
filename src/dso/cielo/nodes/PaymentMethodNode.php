@@ -106,6 +106,14 @@ class PaymentMethodNode implements XMLNode {
     }
 
     /**
+     * Recupera a bandeira do cartão
+     * @return  integer
+     */
+    public function getCreditCard() {
+        return $this->creditCard;
+    }
+
+    /**
      * Recupera o número de parcelas
      * @return  integer
      */
