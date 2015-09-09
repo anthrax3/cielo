@@ -8,15 +8,15 @@
     ],
     "require":{
         "php":">=5.3.7",
-        "phpunit/phpunit": "3.7.1"
+        "phpunit/phpunit": "4.8.6"
     },
     "minimum-stability": "dev",
     "config": {
         "bin-dir": "bin/"
     },
     "autoload": {
-        "psr-0": { 
-            "": "src/" 
+        "psr-0": {
+            "": "src/"
         }
     }
 }
