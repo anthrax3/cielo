@@ -23,7 +23,7 @@ require_once '/var/www/cielo/src/dso/cielo/CieloMode.php';
 
 use Dso\Cielo\CieloMode;
 
-$mode = Dso\Cielo\CieloMode::PRODUCTION;
+$mode = Dso\Cielo\CieloMode::DEPLOYMENT;
 
 $cielo = new Dso\Cielo\Cielo( $mode );
 

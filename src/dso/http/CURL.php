@@ -112,7 +112,7 @@ class CURL implements HTTPRequest {
              * Verificamos se o recurso CURL foi criado com êxito
              */
             if ( is_resource( $curl ) ) {
-                curl_setopt( $curl , CURLOPT_SSLVERSION, 4);
+                curl_setopt( $curl , CURLOPT_SSLVERSION, 1);
                 curl_setopt( $curl , CURLOPT_SSL_VERIFYPEER , 0 );
                 curl_setopt( $curl , CURLOPT_SSL_VERIFYHOST, 0);
                 //curl_setopt( $curl , CURLOPT_CAINFO, getcwd(). "/ez/cielo/ssl/VeriSignClass3PublicPrimaryCertificationAuthority-G5.crt");
