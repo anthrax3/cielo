@@ -13,6 +13,7 @@ use Dso\Cielo\Nodes\EcDataNode;
 use Dso\Cielo\Nodes\CardDataNode;
 use Dso\Cielo\Nodes\HolderDataNode;
 use Dso\Cielo\Request\AuthorizationRequest;
+use Dso\Cielo\Request\AuthorizationTIDRequest;
 use Dso\Cielo\Request\TransactionRequest;
 use Dso\Cielo\Request\CancellationRequest;
 use Dso\Cielo\Request\CaptureRequest;
@@ -223,6 +224,25 @@ class Cielo {
     }
 
     /**
+     * Cria um objeto de requisição de autorização posterior da transacao
+     * @param   string $tid ID da transação
+     * @return  AuthorizationTIDRequest
+     * @throws  UnexpectedValueException Se $tid não for informado
+     */
+    final public function buildAuthorizationTIDRequest( $tid ) {
+        if ( is_null( $tid )) {
+            throw new UnexpectedValueException( 'TID deve ser informado.' );
+        } else {
+            $this->transaction = new AuthorizationTIDRequest( $this->getHTTPRequester() );
+            $this->transaction->addNode( new EcDataNode( $this->getAffiliationCode() , $this->getAffiliationKey() ) );
+            $this->transaction->setURL( $this->cieloURL );
+            $this->transaction->setTID( $tid );
+
+            return $this->transaction;
+        }
+    }
+
+    /**
      * Cria um objeto de requisição de autenticação da transacao
      * @param   string $cardNumber Número do cartão de crédito
      * @param   integer $cardExpiration Data de expiração do cartão no formato <b>yyyymm</b>
@@ -351,7 +371,7 @@ class Cielo {
             $this->transaction->addNode( new EcDataNode( $this->getAffiliationCode() , $this->getAffiliationKey() ) );
             $this->transaction->addNode( new PaymentMethodNode( $paymentProduct , $parcels , $creditCard ) );
             $this->transaction->setURL( $this->cieloURL );
-            
+
             return $this->transaction;
         }
     }

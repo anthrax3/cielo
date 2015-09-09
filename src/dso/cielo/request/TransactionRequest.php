@@ -48,6 +48,7 @@ class TransactionRequest extends AbstractCieloNode {
      * @li  1 (autorizar somente se autenticada)
      * @li  2 (autorizar autenticada e não-autenticada)
      * @li  3 (autorizar sem passar por autenticação – válido somente para crédito)
+     * @li  4 (autorização recorrente)
      * @var     integer
      */
     private $authorize = 2;
