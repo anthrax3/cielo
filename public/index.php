@@ -19,7 +19,6 @@ require __DIR__.'/bootstrap.php';
  * CieloMode::DEPLOYMENT
  * CieloMode::PRODUCTION
  */
-require_once '/var/www/cielo/src/dso/cielo/CieloMode.php';
 
 use Dso\Cielo\CieloMode;
 
@@ -67,7 +66,7 @@ $orderNumber = substr(str_shuffle('0123456789'), 0, 8);
  * Exemplo: R$ 15,00 deve ser formatado como “1500”.
  * @var integer
  */
-$orderValue = 100;
+$orderValue = 12300;
 
 /**
  * Tipo do pagamento, a vista, débito, parcelado pela loja ou pelo banco,
@@ -196,8 +195,9 @@ switch (BUYMODE) {
         try {
             $tid = empty($_SESSION['tid']) ? $_REQUEST['tid'] : $_SESSION['tid'];
             $transaction = $cielo->buildQueryTransaction($tid)->call();
+            echo '<pre>';var_dump($transaction);echo '</pre>';
             var_dump($transaction->getStatus());
-            if ($transaction->getStatus() == 3 || $transaction->getStatus() == 4) {
+            if ($transaction->getStatus() == 2 || $transaction->getStatus() == 3) {
                 $transaction = $cielo->buildAuthorizationTIDRequest($transaction->getTID())->call();
 
                 if ($transaction->getStatus() == 6) {
@@ -227,6 +227,9 @@ switch (BUYMODE) {
          */
         $tid = $cielo->buildTIDRequest($cartao, $paymentProduct)->call()->getTID();
 
+        echo $cielo->__getLastRequest(); //Recupera o XML de requisição
+        echo $cielo->__getLastResponse(); //Recupera o XML de resposta
+
         /**
          * Define se será feita a autorização automática, seu valor pode ser um dos seguinte:
          * 0 – Não autorizar (somente autenticar).
@@ -241,25 +244,55 @@ switch (BUYMODE) {
          * @var Transaction
          */
         $transaction = $cielo
-                ->automaticCapture()
-                ->buildAuthenticationRequest($cartao, $cardNumber, $cardExpiration, $indicator, $securityCode, $holderName, $orderNumber, $orderValue, $paymentProduct, $parcels, null)
+                ->buildAuthenticationRequest(
+                    $cartao,
+                    $cardNumber,
+                    $cardExpiration,
+                    $indicator,
+                    $securityCode,
+                    $holderName,
+                    $orderNumber,
+                    $orderValue,
+                    $paymentProduct,
+                    $parcels,
+                    null)
                 ->call();
 
         /**
          * Dados da autenticaçao
          * @var AuthenticationNode
          */
-        //$authentication = $transaction->getAuthentication();
+        $authentication = $transaction->getAuthentication();
+        //echo $transaction->getTID();
 
-        /*
-        var_dump($authentication);
+        $validateECI = false;
+        if ($authentication) {
 
-        var_dump( $authentication->getECI() );
-        var_dump( $authentication->getCode() );
-        var_dump( $authentication->getDateTime() );
-        var_dump( $authentication->getMessage() );
-        var_dump( $authentication->getValue() );
-        */
+            /**
+             * Verifica se foi retornado o campo ECI
+             * @var integer
+             */
+            $eci = $authentication->getECI();
+
+            $eci_parse = ECI::parse($eci);
+
+            if ($eci_parse == 12) {
+                // authorize 2
+                $eci_parse = ECI::UNAUTHENTICATED;
+                // authorize 3
+                //$eci_parse = ECI::AFFILIATED_DID_NOT_SEND_AUTHENTICATION;
+            }
+
+            $validateECI = ECI::value($eci_parse, $cartao);
+
+            var_dump($authentication);
+
+            var_dump( $authentication->getECI() );
+            var_dump( $authentication->getCode() );
+            var_dump( $authentication->getDateTime() );
+            var_dump( $authentication->getMessage() );
+            var_dump( $authentication->getValue() );
+        }
 
         /**
          * Cria a transação com autorização dentro da loja, fazendo captura automática
